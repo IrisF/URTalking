@@ -19,7 +19,6 @@ namespace Iveonik.Stemmers
         public static String[] stemAndTokenize(IStemmer stemmer, String userInput)
         {
                 String[] userInputAsArray = userInput.Split();
-                char[] delimiterChars = { ' ', ',', '.', ':', '\t' };
                 for(int i = 0; i < userInputAsArray.Length; i++)
                 {
                     String newWord = stemmer.Stem(CleanInput(userInputAsArray[i]));
