@@ -23,8 +23,8 @@ namespace UR_Talking
         {
             server = "localhost";
             database = "elise01";
-            uid = "naddl";
-            password = "maikeka0109";
+            uid = "user";
+            password = "pw";
             string connectionString;
             connectionString = "SERVER=" + server + ";" + "DATABASE=" +
             database + ";" + "UID=" + uid + ";" + "PASSWORD=" + password + ";";
