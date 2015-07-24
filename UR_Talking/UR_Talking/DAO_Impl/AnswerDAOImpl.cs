@@ -9,7 +9,7 @@ namespace UR_Talking.DAO_Impl
     public class AnswerDAOImpl : AnswerDAO
     {
         private TestRequest tr;
-
+     
         public AnswerDAOImpl()
         {
             tr = new TestRequest();

@@ -35,7 +35,7 @@ namespace UR_Talking
         // POST api/<controller>
         public string Post([FromBody]string value)
         {
-            String [] request = StemmerAndTokenizer.stemAndTokenize(new GermanStemmer(), value);
+            String [] request = StemmerAndTokenizer.stemAndTokenize(this.germanStemmer, value);
             
             String answer = this.answerDAO.GetAnswer(request);
 

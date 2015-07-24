@@ -17,9 +17,12 @@ namespace UR_Talking.App_Start
         public static void Register(HttpConfiguration config)
         {
             UnityContainer container = new UnityContainer();
-            
-            container.RegisterType<AnswerDAO, AnswerDAOImpl>(new HierarchicalLifetimeManager());
-            container.RegisterType<IStemmer, GermanStemmer>(new HierarchicalLifetimeManager());
+
+            AnswerDAO answerDAO = new AnswerDAOImpl();
+            IStemmer germanStemmer = new GermanStemmer();
+
+            container.RegisterInstance(answerDAO);
+            container.RegisterInstance(germanStemmer);
 
             config.DependencyResolver = new UnityResolver(container);
             

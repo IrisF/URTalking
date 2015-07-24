@@ -30,7 +30,8 @@
         var answerLi = $('<li><strong>' + "Elise: " + '</strong>' + answer + '</li>');
         $('#chatHistory').append(answerLi);
         if ($('.chat_box ul li').length > 8) {
-          $('.chat_box ul').animate({ top: '-=40' }, 'slow');
+            var height = $('.chat_box')[0].scrollHeight;
+          $('.chat_box').scrollTop(height);
         }
         $('input[type=search]').val("");
     },
