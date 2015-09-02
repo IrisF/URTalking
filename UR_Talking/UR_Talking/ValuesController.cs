@@ -25,7 +25,7 @@ namespace UR_Talking
         // POST api/<controller>
         public string Post([FromBody]string value)
         {
-            String [] request = StemmerAndTokenizer.stemAndTokenize(new GermanStemmer(), value);
+            String request = StemmerAndTokenizer.stemAndTokenize(new GermanStemmer(), value);
             TestRequest tr = new TestRequest(request);
             return tr.matchRequest();
         }

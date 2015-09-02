@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using Iveonik.Stemmers;
 
 
+
 namespace Iveonik.Stemmers
 {
     class StemmerAndTokenizer
@@ -14,31 +15,62 @@ namespace Iveonik.Stemmers
         static void Main(string[] args)
         {
             Console.ReadKey();
+
         }
 
-        public static String[] stemAndTokenize(IStemmer stemmer, String userInput)
+        public static string stemAndTokenize(IStemmer stemmerr, string userInput)
         {
-                String[] userInputAsArray = userInput.Split();
-                for(int i = 0; i < userInputAsArray.Length; i++)
+            GermanStemmer stemmer = new GermanStemmer();
+                string[] userInputAsArray = userInput.Split();
+                ISet<string> stopwordList = Lucene.Net.Analysis.De.GermanAnalyzer.GetDefaultStopSet();
+                List<string> filteredWords = filteredStopWords(stopwordList, userInputAsArray);
+                string filteredAndStemmedUserInput = "";
+                for(int i = 0; i < filteredWords.Count; i++)
                 {
-                    String newWord = stemmer.Stem(CleanInput(userInputAsArray[i]));
-                    userInputAsArray[i] = newWord;
-                    Console.WriteLine("Stemmed: " + newWord);
+                    //string newWord = stemmer.Stem(CleanInput(userInputAsArray[i]));
+                    string newWord= stemmer.Stem(CleanInput(filteredWords.ElementAt(i)));
+                    filteredAndStemmedUserInput += newWord;
                 }
-            return userInputAsArray;
+                return filteredAndStemmedUserInput;
+        }
+
+        private static List<string> filteredStopWords(ISet<string> stopWordList, string[] userInput)
+        {
+            List<string> filteredList = new List<string>();
+            for (int i = 0; i < userInput.Length; i++)
+            {
+                for (int j = 0; j < stopWordList.Count; j++)
+                {
+                    if (userInput[i] != null)
+                    {
+                        if (userInput[i].Equals(stopWordList.ElementAt(j)))
+                        {
+                            userInput[i] = null;
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < userInput.Length; i++)
+            {
+                if (userInput[i] != null)
+                {
+                    filteredList.Add(userInput[i]);
+                }
+            }
+                return filteredList;
         }
 
         static string CleanInput(string strIn)
         {
             try
             {
-                String newstr = new Regex("([!@#$%^&*()]|(?:[.](?![a-z0-9]+$)))", RegexOptions.IgnoreCase).Replace(strIn, "");
+                string newstr = new Regex("([!@#$%^&*()]|(?:[.](?![a-z0-9]+$)))", RegexOptions.IgnoreCase).Replace(strIn, "");
                 return Regex.Replace(newstr, @"[^\w\.@-]", "",
                                      RegexOptions.None, TimeSpan.FromSeconds(1.5));
             }
             catch (RegexMatchTimeoutException)
             {
-                return String.Empty;
+                return string.Empty;
             }
         }
 

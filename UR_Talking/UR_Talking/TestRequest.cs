@@ -13,9 +13,9 @@ namespace UR_Talking
         String[] fail = {FAIL_1, FAIL_2};
         Random rnd;
 
-        public TestRequest(string[] input)
+        public TestRequest(string input)
         {
-            this.inp = input;
+            this.inp = input.Split();
             rnd = new Random();
         }
 
