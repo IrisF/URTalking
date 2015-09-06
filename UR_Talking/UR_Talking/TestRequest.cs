@@ -9,17 +9,15 @@ namespace UR_Talking
     {
         const string FAIL_1 = "Sorry, ich bin erst ein paar Tage alt :-/ Deswegen bin ich leider noch ein bisschen dumm und versteh nicht was du von mir willst... ";
         const string FAIL_2 = "Sorry, hab dich akustisch nicht verstanden...";
-        String[] inp;
         String[] fail = {FAIL_1, FAIL_2};
         Random rnd;
 
-        public TestRequest(string input)
+        public TestRequest()
         {
-            this.inp = input.Split();
             rnd = new Random();
         }
 
-        public string matchRequest()
+        public string matchRequest(String[] inp)
         {
             for (int i = 0; i < inp.Length; i++)
             {

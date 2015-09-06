@@ -29,7 +29,7 @@ namespace Iveonik.Stemmers
                 {
                     //string newWord = stemmer.Stem(CleanInput(userInputAsArray[i]));
                     string newWord= stemmer.Stem(CleanInput(filteredWords.ElementAt(i)));
-                    filteredAndStemmedUserInput += newWord;
+                    filteredAndStemmedUserInput += newWord +" ";
                 }
                 return filteredAndStemmedUserInput;
         }
