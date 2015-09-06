@@ -18,7 +18,7 @@ namespace Iveonik.Stemmers
 
         }
 
-        public static string stemAndTokenize(IStemmer stemmerr, string userInput)
+        public static string stemAndTokenize(string userInput)
         {
             GermanStemmer stemmer = new GermanStemmer();
                 string[] userInputAsArray = userInput.Split();
@@ -27,7 +27,6 @@ namespace Iveonik.Stemmers
                 string filteredAndStemmedUserInput = "";
                 for(int i = 0; i < filteredWords.Count; i++)
                 {
-                    //string newWord = stemmer.Stem(CleanInput(userInputAsArray[i]));
                     string newWord= stemmer.Stem(CleanInput(filteredWords.ElementAt(i)));
                     filteredAndStemmedUserInput += newWord +" ";
                 }

@@ -12,12 +12,10 @@ namespace UR_Talking
     public class ValuesController : ApiController
     {
         private AnswerDAO answerDAO;
-        private IStemmer germanStemmer;
 
-        public ValuesController(AnswerDAO answerDAO, IStemmer germanStemmer)
+        public ValuesController(AnswerDAO answerDAO)
         {
             this.answerDAO = answerDAO;
-            this.germanStemmer = germanStemmer;
         }
 
         // GET api/<controller>
@@ -35,7 +33,7 @@ namespace UR_Talking
         // POST api/<controller>
         public string Post([FromBody]string value)
         {
-            String request = StemmerAndTokenizer.stemAndTokenize(new GermanStemmer(), value);
+            String request = StemmerAndTokenizer.stemAndTokenize(value);
             String answer = this.answerDAO.GetAnswer(request.Split());
             return answer;
         }
