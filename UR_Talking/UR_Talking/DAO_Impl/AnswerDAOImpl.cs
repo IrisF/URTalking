@@ -3,22 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using UR_Talking.DAO;
+using SimpleAnswerTypeDetector;
+using System.IO;
+using java.io;
 
 namespace UR_Talking.DAO_Impl
 {
     public class AnswerDAOImpl : AnswerDAO
     {
-        private TestRequest tr;
-     
-        public AnswerDAOImpl()
-        {
-            tr = new TestRequest();
-        }
+        public AnswerDAOImpl(){}
 
-        public string GetAnswer(string[] question)
+        public string GetAnswer(List<SearchObject> searchObjects)
         {
-            return tr.matchRequest(question);
-        }
+            foreach(SearchObject searchObject in searchObjects){
 
+            }
+
+            return "";
+        }
     }
 }

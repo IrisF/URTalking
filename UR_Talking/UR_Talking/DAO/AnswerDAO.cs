@@ -8,6 +8,6 @@ namespace UR_Talking.DAO
 {
     public interface AnswerDAO
     {
-       string GetAnswer(string[] question);
+       string GetAnswer(List<SearchObject> searchObjects);
     }
 }

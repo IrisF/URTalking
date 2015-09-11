@@ -6,50 +6,31 @@ using System.Net.Http;
 using System.Web.Http;
 using Iveonik.Stemmers;
 using UR_Talking.DAO;
+using UR_Talking.DAO_Impl;
+using SynonymsDictionary;
+using System.IO;
 
 namespace UR_Talking
 {
     public class ValuesController : ApiController
     {
         private AnswerDAO answerDAO;
-        private IStemmer germanStemmer;
+        private NLP nlp;
 
-        public ValuesController(AnswerDAO answerDAO, IStemmer germanStemmer)
+        public ValuesController(AnswerDAO answerDAO, NLP nlp)
         {
             this.answerDAO = answerDAO;
-            this.germanStemmer = germanStemmer;
-        }
-
-        // GET api/<controller>
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/<controller>/5
-        public string Get(int id)
-        {
-            return "value";
+            this.nlp = nlp;
         }
 
         // POST api/<controller>
         public string Post([FromBody]string value)
         {
-            String [] request = StemmerAndTokenizer.stemAndTokenize(this.germanStemmer, value);
-            
-            String answer = this.answerDAO.GetAnswer(request);
+            List<SearchObject> searchObjects = nlp.GetAnswerTypList(value);
 
+            string answer = this.answerDAO.GetAnswer(searchObjects);
+         
             return answer;
-        }
-
-        // PUT api/<controller>/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/<controller>/5
-        public void Delete(int id)
-        {
         }
     }
 }

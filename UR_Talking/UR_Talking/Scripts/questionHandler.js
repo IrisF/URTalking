@@ -20,7 +20,7 @@
         });
     },
     onAnswerSuccess = function (response) {
-
+        console.log(response);
         renderAnswer(response);
     },
     onAnswerError = function (err) {
