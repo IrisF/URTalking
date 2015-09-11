@@ -19,10 +19,10 @@ namespace UR_Talking.App_Start
             UnityContainer container = new UnityContainer();
 
             AnswerDAO answerDAO = new AnswerDAOImpl();
-            IStemmer germanStemmer = new GermanStemmer();
+            NLP nlp = new NLP();
 
             container.RegisterInstance(answerDAO);
-            container.RegisterInstance(germanStemmer);
+            container.RegisterInstance(nlp);
 
             config.DependencyResolver = new UnityResolver(container);
             
