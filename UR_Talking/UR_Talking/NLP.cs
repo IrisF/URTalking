@@ -17,34 +17,19 @@ namespace UR_Talking
         public NLP()
         {
             this.stanfordNLP = new StanfordNLP();
-            this.answerTypeDetect = new AnswerTypeDetect();
             this.dictionary = Dictionary.LoadDictionary(@"D:\synonym_model.bin");
+            this.answerTypeDetect = new AnswerTypeDetect(this.dictionary);
 
             answerTypeDetect.LoadPersonModel(@"D:/person_model.dat");
             answerTypeDetect.LoadLocationModel(@"D:/location_model.dat");
             answerTypeDetect.LoadDateModel(@"D:/date_model.dat");
+            answerTypeDetect.LoadPeriodModel(@"D:/period_model.dat");
+            answerTypeDetect.LoadNumberModel(@"D:/number_model.dat");
+
+            answerTypeDetect.setSynonyms();
         }
 
-        public static void CreateDictionaryModel()
-        {
-            List<SynonymsObject> synonymsList = new List<SynonymsObject>();
-
-            string word1 = "hauptfach";
-            var synonyms1 = new List<string> { "hf" };
-
-            string word2 = "informationswissenschaft";
-            var synonyms2 = new List<string> { "inf", "Infwiss", "infowiss", "infowissenschaften", "infowissenschaft", "informationswissenschaften" };
-
-            SynonymsObject s1 = new SynonymsObject(synonyms1, word1);
-            SynonymsObject s2 = new SynonymsObject(synonyms2, word2);
-
-            synonymsList.Add(s1);
-            synonymsList.Add(s2);
-
-            SynonymsDictionary.ModelHandler.SerializeFile(@"D:\synonym_model.bin", synonymsList);
-        }
-
-        public List<string> ReplaceBySynonym(string question)
+        public List<string> ReplaceByWordSynonyms(string question)
         {
             List<string> sentences = GetSentences(question);
 
@@ -63,10 +48,18 @@ namespace UR_Talking
             return sentences;
         }
 
-        public List<SearchObject> GetAnswerTypList(string question)
+        public string ReplaceBySynonyms(string question)
         {
-            List<string> sentences = ReplaceBySynonym(question);
+            return dictionary.getSynonymSentence(question);
+        }
 
+        public List<string> SplitIntoSentences(string question)
+        {
+            return stanfordNLP.splitSentences(question);
+        }
+
+        public List<SearchObject> GetAnswerTypList(List<string> sentences)
+        {
             List<SearchObject> sentencesAnswerTyps = GetSentencesAnswerTyps(sentences);
 
             return sentencesAnswerTyps;

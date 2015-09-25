@@ -16,7 +16,7 @@
 <asp:Content runat="server" ID="BodyContent" ContentPlaceHolderID="MainContent">
     <div class="chat_box" style="width:50%;">
         <ul id="chatHistory" style="list-style: none">
-            <li><b>Elise: </b>Na süßer, wie gehts dir?</li>
+            <li><b>Elise: </b>Hallo mein Name ist Elise :) Was möchtest du von mir wissen? </li>
         </ul>
     </div>
     <input type="search"/>
