@@ -26,9 +26,13 @@ namespace UR_Talking
         // POST api/<controller>
         public string Post([FromBody]string value)
         {
-            String request = StemmerAndTokenizer.stemAndTokenize(value);
+            string request = nlp.ReplaceBySynonyms(value);
 
-            List<SearchObject> searchObjects = nlp.GetAnswerTypList(request);
+            //request = StemmerAndTokenizer.stemAndTokenize(request);
+
+            List<string> sentences = nlp.SplitIntoSentences(request);
+
+            List<SearchObject> searchObjects = nlp.GetAnswerTypList(sentences);
 
             string answer = this.answerDAO.GetAnswer(searchObjects);
          

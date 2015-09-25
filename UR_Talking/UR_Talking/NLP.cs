@@ -17,37 +17,16 @@ namespace UR_Talking
         public NLP()
         {
             this.stanfordNLP = new StanfordNLP();
-            this.answerTypeDetect = new AnswerTypeDetect();
-            CreateDictionaryModel();
             this.dictionary = Dictionary.LoadDictionary(@"D:\synonym_model.bin");
+            this.answerTypeDetect = new AnswerTypeDetect(this.dictionary);
 
             answerTypeDetect.LoadPersonModel(@"D:/person_model.dat");
             answerTypeDetect.LoadLocationModel(@"D:/location_model.dat");
             answerTypeDetect.LoadDateModel(@"D:/date_model.dat");
-        }
+            answerTypeDetect.LoadPeriodModel(@"D:/period_model.dat");
+            answerTypeDetect.LoadNumberModel(@"D:/number_model.dat");
 
-        public static void CreateDictionaryModel()
-        {
-            List<SynonymsObject> synonymsList = new List<SynonymsObject>();
-
-            string word1 = "hauptfach";
-            var synonyms1 = new List<string> { "hf" };
-
-            string word2 = "informationswissenschaft";
-            var synonyms2 = new List<string> { "inf", "infwiss", "infowiss", "infowissenschaften", "infowissenschaft", "informationswissenschaften" };
-
-            string word3 = "erstes hauptfach";
-            var synonyms3 = new List<string> { "1. hf",  "1hf", "1 hf", "1. hauptfach", "1hauptfach", "1 hauptfach"};
-
-            SynonymsObject s1 = new SynonymsObject(synonyms1, word1);
-            SynonymsObject s2 = new SynonymsObject(synonyms2, word2);
-            SynonymsObject s3 = new SynonymsObject(synonyms3, word3);
-
-            synonymsList.Add(s1);
-            synonymsList.Add(s2);
-            synonymsList.Add(s3);
-
-            SynonymsDictionary.ModelHandler.SerializeFile(@"D:\synonym_model.bin", synonymsList);
+            answerTypeDetect.setSynonyms();
         }
 
         public List<string> ReplaceByWordSynonyms(string question)
@@ -69,22 +48,18 @@ namespace UR_Talking
             return sentences;
         }
 
-        public List<string> ReplaceBySynonyms(string question)
+        public string ReplaceBySynonyms(string question)
         {
-            List<string> sentences = GetSentences(question);
-
-            for (int i = 0; i < sentences.Count; i++)
-            {
-                sentences[i] = dictionary.getSynonymSentence(sentences[i]);
-            }
-
-            return sentences;
+            return dictionary.getSynonymSentence(question);
         }
 
-        public List<SearchObject> GetAnswerTypList(string question)
+        public List<string> SplitIntoSentences(string question)
         {
-            List<string> sentences = ReplaceBySynonyms(question);
+            return stanfordNLP.splitSentences(question);
+        }
 
+        public List<SearchObject> GetAnswerTypList(List<string> sentences)
+        {
             List<SearchObject> sentencesAnswerTyps = GetSentencesAnswerTyps(sentences);
 
             return sentencesAnswerTyps;
