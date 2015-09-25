@@ -23,8 +23,8 @@ namespace UR_Talking
         {
             server = "localhost";
             database = "elise01";
-            uid = "user";
-            password = "pw";
+            uid = "naddl";
+            password = "maikeka0109";
             string connectionString;
             connectionString = "SERVER=" + server + ";" + "DATABASE=" +
             database + ";" + "UID=" + uid + ";" + "PASSWORD=" + password + ";";
@@ -87,32 +87,52 @@ namespace UR_Talking
         {
         }
 
+
+
+        
+        public List<string> MySqlCollectionQuery()
+        {
+            List<string> QueryResult = new List<string>();
+            MySqlCommand cmdName = new MySqlCommand("show tables", connection);
+            if (this.OpenConnection() == true)
+            {
+                MySqlDataReader reader = cmdName.ExecuteReader();
+                while (reader.Read())
+                {
+                    QueryResult.Add(reader.GetString(0));
+                }
+                reader.Close(); }
+                return QueryResult;
+           
+        }
+
+
+        List<string>[] list;
         //Select statement
         public List<string>[] Select(string select)
         {
             string query = "SELECT * FROM "+select;
-
-            //Create a list to store the result
-            List<string>[] list = new List<string>[3];
-            list[0] = new List<string>();
-            list[1] = new List<string>();
-            list[2] = new List<string>();
-
 
             //Open connection
             if (this.OpenConnection() == true)
             {
                 //Create Command
                 MySqlCommand cmd = new MySqlCommand(query, connection);
+
                 //Create a data reader and Execute the command
                 MySqlDataReader dataReader = cmd.ExecuteReader();
+
+                //Create a list to store the result
+                createListForcols(dataReader.FieldCount);
+
 
                 //Read the data and store them in the list
                 while (dataReader.Read())
                 {
-                    list[0].Add(dataReader["id"] + "");
-                    list[1].Add(dataReader["frage"] + "");
-                    list[2].Add(dataReader["antwort"] + "");
+                    for (int i = 0; i < dataReader.FieldCount; i++)
+                    {
+                        list[i].Add(dataReader[dataReader.GetName(i)] + "");
+                    }
                 }
 
                 //close Data Reader
@@ -130,5 +150,14 @@ namespace UR_Talking
             }
         }
 
+        public List<string>[] createListForcols(int cols)
+        {
+            //Create a list to store the result
+            list = new List<string>[cols];
+            for (int i = 0; i < cols; i++) { 
+                list[i] = new List<string>();
+            }
+            return list;
+        }
     }
 }

@@ -11,26 +11,65 @@ namespace UR_Talking
     public class CreateAnswer
     {
         private List<String> savedConversation = new List<String>();
+        private List<string>[] res;
+        private List<string>[] resHelper;
+
+
 
         public string speak(string[] key)
         {
+            string searchInTable;
+            List<string> alltables;
+            string elise_speak;
+           
 
-            ConnectToMySQL connect = new ConnectToMySQL();
-            string searchInTable = "orte";
-            string question = "Wo ist die Mensa?";
-            string elise_speak = testAlgorithmLevenstein(connect, searchInTable, question);
+            if (key != null)
+            {
+                createListForcols(3);
+                string question = joinQuestionWords(key);
+                ConnectToMySQL connect = new ConnectToMySQL();
 
-          //  string elise_speak = KeyWords.buzz(key);
-            return elise_speak;
+                //if there is a buzz key get spezific table
+                searchInTable = KeyWords.getBuzzTable(key);
+                if (searchInTable != null){
+                    resultsFromTable(connect, searchInTable);
+                    elise_speak = testAlgorithmLevenstein(connect, question);
+                }
+                
+                // if there is no buzz key search in all tables
+                else{
+                    alltables = KeyWords.allTables();
+                    foreach(string table in alltables){
+                    resultsFromTable(connect, table);
+                        }
+                    elise_speak = testAlgorithmLevenstein(connect, question);
+                }
+                return elise_speak;
+
+            }
+
+            else { 
+            return "Du hast vergessen die Frage zu stellen";
+            }
         }
 
-        public string testAlgorithmLevenstein(ConnectToMySQL connect, string searchInTable, string question_user)
+        private string joinQuestionWords(string[] keys)
+        {
+            string question = "";
+           foreach(string key in keys){
+               question = question +" "+ key;            
+           }
+           return question;
+        }
+
+        public string testAlgorithmLevenstein(ConnectToMySQL connect, string question_user)
         {   
             ExecuteLevenstein l = new ExecuteLevenstein();
-            List<string>[] res = connect.Select(searchInTable);
             List<string> question_db = res[1];
             List<string> answers_db = res[2];
-            string answer_match = answers_db[0];
+            string answer_match = "Hmm die Frage kann ich leider noch nicht beantworten. Soll ich diese Frage mit in die Datenbank aufnehmen?";
+
+
             int helper = l.useLevenstein(question_user, question_db[0]);
 
             for (int i = 0; i < answers_db.Count; i++)
@@ -44,13 +83,38 @@ namespace UR_Talking
             return answer_match;
         }
 
-        public String useContext()
+
+
+
+        public List<string>[] resultsFromTable(ConnectToMySQL connect, string searchInTable)
         {
-            //TODO: search in savedConversation
-            return "";
+       
+             resHelper = connect.Select(searchInTable);
+             for (int i = 0; i < 3; i++ )
+                 addingResults(i, resHelper);
+             return res;
         }
 
 
+         private void addingResults(int at, List<string>[] resHelper) {
+           
+             foreach (string result in resHelper[at])
+             {
+                 res[at].Add(result);
+             }
+             
+
+         }
+         public List<string>[] createListForcols(int cols)
+         {
+             //Create a list to store the result
+             res = new List<string>[cols];
+             for (int i = 0; i < cols; i++)
+             {
+                 res[i] = new List<string>();
+             }
+             return res;
+         }
 
 
 
