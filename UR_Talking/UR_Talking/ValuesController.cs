@@ -35,9 +35,9 @@ namespace UR_Talking
 
             //String [] request = StemmerAndTokenizer.stemAndTokenize(new GermanStemmer(), value);
             
-            CreateAnswer answer = new CreateAnswer();
+            //CreateAnswer answer = new CreateAnswer();
 
-            return answer.speak(searchObjects);
+            //return answer.speak(searchObjects);
 
 
             //request = StemmerAndTokenizer.stemAndTokenize(request);
@@ -46,9 +46,9 @@ namespace UR_Talking
 
             List<SearchObject> searchObjects = nlp.GetAnswerTypList(sentences);
 
-            string answer = this.answerDAO.GetAnswer(searchObjects);
+            string answer = this.answerDAO.GetAnswer(searchObjects);*/
          
-            return value;*/
+            return value;
         }
     }
 }

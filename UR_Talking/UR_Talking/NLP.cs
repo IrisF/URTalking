@@ -17,14 +17,14 @@ namespace UR_Talking
         public NLP()
         {
             this.stanfordNLP = new StanfordNLP();
-            this.dictionary = Dictionary.LoadDictionary(@"D:\synonym_model.bin");
+            this.dictionary = Dictionary.LoadDictionary(@"C:\Users\Iris\Documents\URTalking\Chatbot\URTalking\UR_Talking\UR_Talking\Models\Dictionary\synonym_model.bin");
             this.answerTypeDetect = new AnswerTypeDetect(this.dictionary);
 
-            answerTypeDetect.LoadPersonModel(@"D:/person_model.dat");
-            answerTypeDetect.LoadLocationModel(@"D:/location_model.dat");
-            answerTypeDetect.LoadDateModel(@"D:/date_model.dat");
-            answerTypeDetect.LoadPeriodModel(@"D:/period_model.dat");
-            answerTypeDetect.LoadNumberModel(@"D:/number_model.dat");
+            answerTypeDetect.LoadPersonModel(@"C:\Users\Iris\Documents\URTalking\Chatbot\URTalking\UR_Talking\UR_Talking\Models\AnswerTypDetect\person_model.dat");
+            answerTypeDetect.LoadLocationModel(@"C:\Users\Iris\Documents\URTalking\Chatbot\URTalking\UR_Talking\UR_Talking\Models\AnswerTypDetect\location_model.dat");
+            answerTypeDetect.LoadDateModel(@"C:\Users\Iris\Documents\URTalking\Chatbot\URTalking\UR_Talking\UR_Talking\Models\AnswerTypDetect\date_model.dat");
+            answerTypeDetect.LoadPeriodModel(@"C:\Users\Iris\Documents\URTalking\Chatbot\URTalking\UR_Talking\UR_Talking\Models\AnswerTypDetect\period_model.dat");
+            answerTypeDetect.LoadNumberModel(@"C:\Users\Iris\Documents\URTalking\Chatbot\URTalking\UR_Talking\UR_Talking\Models\AnswerTypDetect\number_model.dat");
 
             answerTypeDetect.setSynonyms();
         }
