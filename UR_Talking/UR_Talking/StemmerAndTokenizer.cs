@@ -21,16 +21,16 @@ namespace Iveonik.Stemmers
         public static string stemAndTokenize(string userInput)
         {
             GermanStemmer stemmer = new GermanStemmer();
-                string[] userInputAsArray = userInput.Split();
-                ISet<string> stopwordList = Lucene.Net.Analysis.De.GermanAnalyzer.GetDefaultStopSet();
-                List<string> filteredWords = filteredStopWords(stopwordList, userInputAsArray);
-                string filteredAndStemmedUserInput = "";
-                for(int i = 0; i < filteredWords.Count; i++)
-                {
-                    string newWord= stemmer.Stem(CleanInput(filteredWords.ElementAt(i)));
-                    filteredAndStemmedUserInput += newWord +" ";
-                }
-                return filteredAndStemmedUserInput;
+            string[] userInputAsArray = userInput.Split();
+            ISet<string> stopwordList = Lucene.Net.Analysis.De.GermanAnalyzer.GetDefaultStopSet();
+            List<string> filteredWords = filteredStopWords(stopwordList, userInputAsArray);
+            string filteredAndStemmedUserInput = "";
+            for (int i = 0; i < filteredWords.Count; i++)
+            {
+                string newWord = stemmer.Stem(CleanInput(filteredWords.ElementAt(i)));
+                filteredAndStemmedUserInput += newWord + " ";
+            }
+            return filteredAndStemmedUserInput;
         }
 
         private static List<string> filteredStopWords(ISet<string> stopWordList, string[] userInput)
@@ -56,7 +56,7 @@ namespace Iveonik.Stemmers
                     filteredList.Add(userInput[i]);
                 }
             }
-                return filteredList;
+            return filteredList;
         }
 
         static string CleanInput(string strIn)
