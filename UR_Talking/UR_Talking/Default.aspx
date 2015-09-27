@@ -21,7 +21,7 @@
     </div>
     <input type="search"/>
     <button type="submit">ok</button>
-    <iframe src="../Images/bild.html" 
+    <iframe id="iframe" src="" class="invisible"
 width="450" height="350" style="margin-left:540px; margin-top:-200px;" name="Super duper Video"></iframe>
 <script src="Scripts/questionHandler.js"></script>
 </asp:Content>
