@@ -32,22 +32,27 @@ namespace UR_Talking
         }
 
         private string getTableName(AnswerType at){
+
+            if (at.ToString() == "Period" || at.ToString() == "Date" || at.ToString() == "Number")
+            {
+                at = AnswerType.Unknown;
+            }
             switch (at)
             {
                 case AnswerType.Person:
-                    return AnswerType.Person.ToString();
-                case AnswerType.Period:
-                    return AnswerType.Period.ToString();
-                case AnswerType.Date:
-                    return AnswerType.Date.ToString();
+                    return AnswerType.Person.ToString().ToLower();
+                //case AnswerType.Period:
+                //    return AnswerType.Period.ToString().ToLower();
+                //case AnswerType.Date:
+                //    return AnswerType.Date.ToString().ToLower();
                 case AnswerType.Location:
-                    return AnswerType.Location.ToString();
-                case AnswerType.Number:
-                    return AnswerType.Number.ToString();
+                    return AnswerType.Location.ToString().ToLower();
+                //case AnswerType.Number:
+                //    return AnswerType.Number.ToString().ToLower();
                 case AnswerType.Unknown:
-                    return AnswerType.Unknown.ToString();
+                    return AnswerType.Unknown.ToString().ToLower();
                 default:
-                    return AnswerType.Unknown.ToString();
+                    return AnswerType.Unknown.ToString().ToLower();
             }
         }
 
@@ -63,7 +68,8 @@ namespace UR_Talking
                 //string question = joinQuestionWords(key);
                 ConnectToMySQL connect = new ConnectToMySQL();
 
-                if (searchInTable != null){
+                if (searchInTable != AnswerType.Unknown.ToString().ToLower())
+                {
                     resultsFromTable(connect, searchInTable);
                     elise_speak = testAlgorithmLevenstein(connect, question);
                 }
@@ -99,18 +105,23 @@ namespace UR_Talking
             ExecuteLevenstein l = new ExecuteLevenstein();
             List<string> question_db = res[1];
             List<string> answers_db = res[2];
+  //          List<string> type_db = res[3];
             string answer_match = "Hmm die Frage kann ich leider noch nicht beantworten. Soll ich diese Frage mit in die Datenbank aufnehmen?";
 
 
             int helper = l.useLevenstein(question_user, question_db[0]);
-
+           
             for (int i = 0; i < answers_db.Count; i++)
             {
-                if (helper > l.useLevenstein(question_user, question_db[i]))
+                if (helper >= l.useLevenstein(question_user, question_db[i]))
                 {
                     helper = l.useLevenstein(question_user, question_db[i]);
                     answer_match = answers_db[i];
                 }
+            }
+
+            if (helper > 75) {
+                answer_match = "Hmm die Frage kann ich leider noch nicht beantworten. Soll ich diese Frage mit in die Datenbank aufnehmen?";
             }
             return answer_match;
         }
