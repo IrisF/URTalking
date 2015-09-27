@@ -26,29 +26,14 @@ namespace UR_Talking
         // POST api/<controller>
         public string Post([FromBody]string value)
         {
-
-            string request = nlp.ReplaceBySynonyms(value);
-
+            string request = value;
+            if (request != null) { 
             List<string> sentences = nlp.SplitIntoSentences(request);
-
             List<SearchObject> searchObjects = nlp.GetAnswerTypList(sentences);
-
-            //String [] request = StemmerAndTokenizer.stemAndTokenize(new GermanStemmer(), value);
-            
             CreateAnswer answer = new CreateAnswer();
-
             return answer.speak(searchObjects);
-
-
-            //request = StemmerAndTokenizer.stemAndTokenize(request);
-
-/*            List<string> sentences = nlp.SplitIntoSentences(request);
-
-            List<SearchObject> searchObjects = nlp.GetAnswerTypList(sentences);
-
-            string answer = this.answerDAO.GetAnswer(searchObjects);
-         
-            return value;*/
+            }
+            return "Du musst schon was fragen :) ";
         }
     }
 }
