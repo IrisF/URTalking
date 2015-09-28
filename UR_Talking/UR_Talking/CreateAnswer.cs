@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using UR_Talking.Levenstein;
 using SimpleAnswerTypeDetector;
+using Iveonik.Stemmers;
 
 namespace UR_Talking
 {
@@ -14,10 +15,12 @@ namespace UR_Talking
         private List<String> savedConversation = new List<String>();
         private List<string>[] res;
         private List<string>[] resHelper;
-
-        public string speak(List<SearchObject> searchObjects)
+        private ConnectToMySQL connect = new ConnectToMySQL();
+        private NLP nlp;
+        private bool search_flag = false;
+        public List<Answer> speak(List<SearchObject> searchObjects)
         {
-            List<string> answers = new List<string>();
+            List<Answer> answers = new List<Answer>();
 
             for (int i = 0; i < searchObjects.Count; i++)
             {
@@ -28,7 +31,7 @@ namespace UR_Talking
                 answers.Add(getAnswer(question, tableName));
             }
 
-            return joinAnswers(answers);
+            return answers;
         }
 
         private string getTableName(AnswerType at){
@@ -56,84 +59,108 @@ namespace UR_Talking
             }
         }
 
-        private string getAnswer(string question, string searchInTable)
+        private Answer getAnswer(string question, string searchInTable)
         {
             List<string> alltables;
-            string elise_speak;
+            Answer elise_speak;
 
-
-            if (question != null)
+            if (searchInTable != "searchAllTables")
             {
-                createListForcols(3);
-                //string question = joinQuestionWords(key);
-                ConnectToMySQL connect = new ConnectToMySQL();
+                resultsFromTable(connect, searchInTable);
+                elise_speak = testAlgorithmLevenstein(connect, question);
+            }
 
-                if (searchInTable != AnswerType.Unknown.ToString().ToLower())
+        //    if there is no buzz key search in all tables
+            else
+            {
+                search_flag = true;
+                alltables = KeyWords.allTables();
+                foreach (string table in alltables)
                 {
-                    resultsFromTable(connect, searchInTable);
-                    elise_speak = testAlgorithmLevenstein(connect, question);
-                }
-                
-                // if there is no buzz key search in all tables
-                else{
-                    alltables = KeyWords.allTables();
-                    foreach(string table in alltables){
                     resultsFromTable(connect, table);
-                        }
-                    elise_speak = testAlgorithmLevenstein(connect, question);
                 }
+                elise_speak = testAlgorithmLevenstein(connect, question);
+            }
+
                 return elise_speak;
-
-            }
-
-            else { 
-            return "Du hast vergessen die Frage zu stellen";
-            }
         }
 
-        private string joinAnswers(List<string> sentences)
+        private string joinAnswers(List<Answer> sentences)
         {
             string answer = "";
-           foreach(string sentence in sentences){
+           foreach(Answer sentence in sentences){
                answer = answer +" "+ sentence;            
            }
            return answer;
         }
 
-        public string testAlgorithmLevenstein(ConnectToMySQL connect, string question_user)
+        public Answer testAlgorithmLevenstein(ConnectToMySQL connect, string question_user)
         {   
             ExecuteLevenstein l = new ExecuteLevenstein();
+            Answer a = new Answer();
             List<string> question_db = res[1];
             List<string> answers_db = res[2];
-  //          List<string> type_db = res[3];
-            string answer_match = "Hmm die Frage kann ich leider noch nicht beantworten. Soll ich diese Frage mit in die Datenbank aufnehmen?";
+            List<string> type_db = res[3];
+            string answer_match = "";
 
-
-            int helper = l.useLevenstein(question_user, question_db[0]);
+            int helper = 100;
            
             for (int i = 0; i < answers_db.Count; i++)
             {
-                if (helper >= l.useLevenstein(question_user, question_db[i]))
-                {
+
+                    String question_db_stemm = StemmerAndTokenizer.stemAndTokenize(question_db[i]);
+                    String question_user_stemm = StemmerAndTokenizer.stemAndTokenize(question_user);
+                    string[] question_db_splitt = question_db_stemm.Split();
+                    string[] question_user_splitt = question_user_stemm.Split();
+                    Array.Sort(question_db_splitt);
+                    Array.Sort(question_user_splitt);
+                    question_db_stemm = string.Join(" ", question_db_splitt);
+                    question_user_stemm = string.Join(" ", question_user_splitt);
+                    nlp = new NLP();
+
+                    question_db_stemm = nlp.ReplaceBySynonyms(question_db_stemm);
+                     question_user_stemm = nlp.ReplaceBySynonyms(question_user_stemm);
+
+                    if (helper >= l.useLevenstein(question_user_stemm , question_db_stemm ) && type_db[i] == "text")
+                    {
+                        helper = l.useLevenstein(question_user_stemm, question_db_stemm);
+                        a.AnswerText = answers_db[i];
+                        a.Type = type_db[i];
+                    }
+
+
+                    if (helper >= l.useLevenstein(question_user_stemm, question_db_stemm) && type_db[i] == "link")
+                     {
                     helper = l.useLevenstein(question_user, question_db[i]);
-                    answer_match = answers_db[i];
+                    a.Type = type_db[i];
+                    a.Link = answers_db[i];
+
                 }
             }
 
-            if (helper > 75) {
-                answer_match = "Hmm die Frage kann ich leider noch nicht beantworten. Soll ich diese Frage mit in die Datenbank aufnehmen?";
+            if (helper > 40 && search_flag == false) {
+                getAnswer(question_user, "searchAllTables");
             }
-            return answer_match;
+
+
+            if (helper > 60 && search_flag == true)
+            {
+                a.AnswerText = "Leider habe ich die Antwort nicht gefunden. Eventuell finde ich eine Antwort auf deine Frage, wenn du sie anders stellst :)";
+                a.Type = "text";
+                a.Link = "";
+            }
+
+           return a;
+
         }
-
-
 
 
         public List<string>[] resultsFromTable(ConnectToMySQL connect, string searchInTable)
         {
        
              resHelper = connect.Select(searchInTable);
-             for (int i = 0; i < 3; i++ )
+             createListForcols(connect.CountColumns);
+             for (int i = 0; i < connect.CountColumns; i++)
                  addingResults(i, resHelper);
              return res;
         }
@@ -150,16 +177,20 @@ namespace UR_Talking
          }
          public List<string>[] createListForcols(int cols)
          {
-             //Create a list to store the result
-             res = new List<string>[cols];
-             for (int i = 0; i < cols; i++)
+
+             if (res == null)
              {
-                 res[i] = new List<string>();
-             }
+                 //Create a list to store the result
+                 res = new List<string>[cols];
+                 for (int i = 0; i < cols; i++)
+                 {
+                     res[i] = new List<string>();
+                 }
+             } 
+             
              return res;
+
+
          }
-
-
-
     }
 }

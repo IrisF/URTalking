@@ -13,6 +13,13 @@ namespace UR_Talking
         private string database;
         private string uid;
         private string password;
+        private int countColumns;
+
+        public int CountColumns
+        {
+            get { return countColumns; }
+           
+        }
         //Constructor
         public ConnectToMySQL()
         {
@@ -124,7 +131,7 @@ namespace UR_Talking
 
                 //Create a list to store the result
                 createListForcols(dataReader.FieldCount);
-
+                countColumns = dataReader.FieldCount;
 
                 //Read the data and store them in the list
                 while (dataReader.Read())

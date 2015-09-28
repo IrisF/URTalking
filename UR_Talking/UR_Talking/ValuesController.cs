@@ -24,8 +24,9 @@ namespace UR_Talking
         }
 
         // POST api/<controller>
-        public string Post([FromBody]string value)
+        public List<Answer> Post([FromBody]string value)
         {
+
             string request = value;
             if (request != null) { 
             List<string> sentences = nlp.SplitIntoSentences(request);
@@ -33,7 +34,13 @@ namespace UR_Talking
             CreateAnswer answer = new CreateAnswer();
             return answer.speak(searchObjects);
             }
-            return "Du musst schon was fragen :) ";
+
+            List<Answer> answers = new List<Answer>();
+            Answer a = new Answer();
+            a.AnswerText = "Du musst schon was fragen :) ";
+            a.Type = "text";
+            answers.Add(a);
+            return answers;
         }
     }
 }

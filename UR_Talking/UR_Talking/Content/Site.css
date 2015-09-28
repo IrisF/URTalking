@@ -135,10 +135,7 @@ footer {
 
 .chat_box {
     position: relative;
-    height: 150px;
     width: 100%;
-    overflow: hidden;
-    overflow-y: scroll;
     margin-bottom: 10px;
 }
 

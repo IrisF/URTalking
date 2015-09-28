@@ -3,12 +3,9 @@
 
     ev.preventDefault();
 
-    if(input){
         renderQuestion(input);
         sendQuestion(input);
-    } else {
-        alert("Gib etwas ein!!");
-    }
+
 },
     sendQuestion = function (question) {
         $.ajax({
@@ -20,16 +17,18 @@
         });
     },
     onAnswerSuccess = function (response) {
-        checkIfResponseIsLink(response);
-        console.log(response);
+        for(var i = 0; i < response.length; i++){
+        checkIfResponseIsLink(response[i]);
+        console.log(response[i]);
+        }
     },
 
     checkIfResponseIsLink = function (response) {
-        if (response.type == "Link") {
-            setUrlOfIFrame(response.value);
+        if (response.Type == "link") {
+            setUrlOfIFrame(response.Link);
             renderAnswerIfLink(response);
         } else {
-            renderAnswer(response);
+            renderAnswer(response.AnswerText);
         }
     },
 
@@ -52,11 +51,11 @@
 
     renderAnswerIfLink = function (answer) {
         console.log("renderAnswerIfLink");
-        var button = setupButton(answer);
-        var answerLi = $('<li><strong>' + "Elise: " + '</strong>' + answer + '</li>');
+        var button = setupButton(answer.Link);
+        var answerLi = $('<li><strong>' + "Elise: " + '</strong>' + answer.AnswerText + '</li>');
         answerLi.append(button);
         attachListElement(answerLi);
-        setUrlOfIFrame(answer);
+       setUrlOfIFrame(answer.Link);
     },
 
     setupButton = function (answer) {
