@@ -11,6 +11,7 @@
     </asp:PlaceHolder>  
     <webopt:BundleReference runat="server" Path="~/Content/css" /> 
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <link rel="stylesheet" href="Scripts/bootstrap/css/bootstrap.min.css">
     <meta name="viewport" content="width=device-width" />
     <asp:ContentPlaceHolder runat="server" ID="HeadContent" />
 </head>
@@ -62,13 +63,6 @@
                         </LoggedInTemplate>
                     </asp:LoginView>
                 </section>
-                <nav>
-                    <ul id="menu">
-                        <li><a runat="server" href="~/">Startseite</a></li>
-                        <li><a runat="server" href="~/About">Informationen</a></li>
-                        <li><a runat="server" href="~/Contact">Kontakt</a></li>
-                    </ul>
-                </nav>
             </div>
         </div>
     </header>

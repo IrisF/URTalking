@@ -59,6 +59,14 @@ mark {
     visibility: hidden;
 }
 
+.invisible{
+    visibility:hidden;
+}
+
+.button-size{
+    width:100px;
+}
+
 h1, h2, h3,
 h4, h5, h6 {
     color: #000;
@@ -127,10 +135,7 @@ footer {
 
 .chat_box {
     position: relative;
-    height: 150px;
     width: 100%;
-    overflow: hidden;
-    overflow-y: scroll;
     margin-bottom: 10px;
 }
 

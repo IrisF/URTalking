@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using UR_Talking.Levenstein;
 using SimpleAnswerTypeDetector;
+using Iveonik.Stemmers;
 
 namespace UR_Talking
 {
@@ -14,10 +15,18 @@ namespace UR_Talking
         private List<String> savedConversation = new List<String>();
         private List<string>[] res;
         private List<string>[] resHelper;
+        private ConnectToMySQL connect = new ConnectToMySQL();
+        private NLP nlp;
+        private bool search_flag = false;
 
-        public string speak(List<SearchObject> searchObjects)
+        public CreateAnswer(NLP nlp)
         {
-            List<string> answers = new List<string>();
+            this.nlp = nlp;
+        }
+
+        public List<Answer> speak(List<SearchObject> searchObjects)
+        {
+            List<Answer> answers = new List<Answer>();
 
             for (int i = 0; i < searchObjects.Count; i++)
             {
@@ -28,101 +37,142 @@ namespace UR_Talking
                 answers.Add(getAnswer(question, tableName));
             }
 
-            return joinAnswers(answers);
+            return answers;
         }
 
         private string getTableName(AnswerType at){
+
+            if (at.ToString() == "Period" || at.ToString() == "Date" || at.ToString() == "Number")
+            {
+                at = AnswerType.Unknown;
+            }
             switch (at)
             {
                 case AnswerType.Person:
-                    return AnswerType.Person.ToString();
-                case AnswerType.Period:
-                    return AnswerType.Period.ToString();
-                case AnswerType.Date:
-                    return AnswerType.Date.ToString();
+                    return AnswerType.Person.ToString().ToLower();
+                //case AnswerType.Period:
+                //    return AnswerType.Period.ToString().ToLower();
+                //case AnswerType.Date:
+                //    return AnswerType.Date.ToString().ToLower();
                 case AnswerType.Location:
-                    return AnswerType.Location.ToString();
-                case AnswerType.Number:
-                    return AnswerType.Number.ToString();
+                    return AnswerType.Location.ToString().ToLower();
+                //case AnswerType.Number:
+                //    return AnswerType.Number.ToString().ToLower();
                 case AnswerType.Unknown:
-                    return AnswerType.Unknown.ToString();
+                    return AnswerType.Unknown.ToString().ToLower();
                 default:
-                    return AnswerType.Unknown.ToString();
+                    return AnswerType.Unknown.ToString().ToLower();
             }
         }
 
-        private string getAnswer(string question, string searchInTable)
+        private Answer getAnswer(string question, string searchInTable)
         {
             List<string> alltables;
-            string elise_speak;
+            Answer elise_speak;
 
-
-            if (question != null)
+            if (searchInTable != "searchAllTables")
             {
-                createListForcols(3);
-                //string question = joinQuestionWords(key);
-                ConnectToMySQL connect = new ConnectToMySQL();
+                resultsFromTable(connect, searchInTable);
+                elise_speak = testAlgorithmLevenstein(connect, question);
+            }
 
-                if (searchInTable != null){
-                    resultsFromTable(connect, searchInTable);
-                    elise_speak = testAlgorithmLevenstein(connect, question);
-                }
-                
-                // if there is no buzz key search in all tables
-                else{
-                    alltables = KeyWords.allTables();
-                    foreach(string table in alltables){
+        //    if there is no buzz key search in all tables
+            else
+            {
+                search_flag = true;
+                alltables = KeyWords.allTables();
+                foreach (string table in alltables)
+                {
                     resultsFromTable(connect, table);
-                        }
-                    elise_speak = testAlgorithmLevenstein(connect, question);
                 }
+                elise_speak = testAlgorithmLevenstein(connect, question);
+            }
+
                 return elise_speak;
-
-            }
-
-            else { 
-            return "Du hast vergessen die Frage zu stellen";
-            }
         }
 
-        private string joinAnswers(List<string> sentences)
+        private string joinAnswers(List<Answer> sentences)
         {
             string answer = "";
-           foreach(string sentence in sentences){
+           foreach(Answer sentence in sentences){
                answer = answer +" "+ sentence;            
            }
            return answer;
         }
 
-        public string testAlgorithmLevenstein(ConnectToMySQL connect, string question_user)
+        public Answer testAlgorithmLevenstein(ConnectToMySQL connect, string question_user)
         {   
             ExecuteLevenstein l = new ExecuteLevenstein();
+            Answer a = new Answer();
             List<string> question_db = res[1];
             List<string> answers_db = res[2];
-            string answer_match = "Hmm die Frage kann ich leider noch nicht beantworten. Soll ich diese Frage mit in die Datenbank aufnehmen?";
+            List<string> type_db = res[3];
 
+            int helper = 100;
 
-            int helper = l.useLevenstein(question_user, question_db[0]);
+            question_user = nlp.ReplaceBySynonyms(question_user);
+
+            String question_user_stemm = StemmerAndTokenizer.stemAndTokenize(question_user);
+
+            string[] question_user_splitt = question_user_stemm.Split();
+            Array.Sort(question_user_splitt);
+            question_user_stemm = string.Join(" ", question_user_splitt);
 
             for (int i = 0; i < answers_db.Count; i++)
             {
-                if (helper > l.useLevenstein(question_user, question_db[i]))
-                {
+
+                    question_db[i] = nlp.ReplaceBySynonyms(question_db[i]);
+
+                    String question_db_stemm = StemmerAndTokenizer.stemAndTokenize(question_db[i]);
+                    
+                    string[] question_db_splitt = question_db_stemm.Split();
+                   
+                    Array.Sort(question_db_splitt);
+                  
+                    question_db_stemm = string.Join(" ", question_db_splitt);
+                   
+
+
+                    if (helper >= l.useLevenstein(question_user_stemm , question_db_stemm ) && type_db[i] == "text")
+                    {
+                        helper = l.useLevenstein(question_user_stemm, question_db_stemm);
+                        a.AnswerText = answers_db[i];
+                        a.Type = type_db[i];
+                    }
+
+
+                    if (helper >= l.useLevenstein(question_user_stemm, question_db_stemm) && type_db[i] == "link")
+                     {
                     helper = l.useLevenstein(question_user, question_db[i]);
-                    answer_match = answers_db[i];
+                    a.Type = type_db[i];
+                    a.Link = answers_db[i];
+
                 }
             }
-            return answer_match;
+
+            if (helper > 40 && search_flag == false) {
+                getAnswer(question_user, "searchAllTables");
+            }
+
+
+            if (helper > 60 && search_flag == true)
+            {
+                a.AnswerText = "Leider habe ich die Antwort nicht gefunden. Eventuell finde ich eine Antwort auf deine Frage, wenn du sie anders stellst :)";
+                a.Type = "text";
+                a.Link = "";
+            }
+
+           return a;
+
         }
-
-
 
 
         public List<string>[] resultsFromTable(ConnectToMySQL connect, string searchInTable)
         {
        
              resHelper = connect.Select(searchInTable);
-             for (int i = 0; i < 3; i++ )
+             createListForcols(connect.CountColumns);
+             for (int i = 0; i < connect.CountColumns; i++)
                  addingResults(i, resHelper);
              return res;
         }
@@ -139,16 +189,20 @@ namespace UR_Talking
          }
          public List<string>[] createListForcols(int cols)
          {
-             //Create a list to store the result
-             res = new List<string>[cols];
-             for (int i = 0; i < cols; i++)
+
+             if (res == null)
              {
-                 res[i] = new List<string>();
-             }
+                 //Create a list to store the result
+                 res = new List<string>[cols];
+                 for (int i = 0; i < cols; i++)
+                 {
+                     res[i] = new List<string>();
+                 }
+             } 
+             
              return res;
+
+
          }
-
-
-
     }
 }

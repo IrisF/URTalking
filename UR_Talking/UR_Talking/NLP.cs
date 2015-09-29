@@ -19,6 +19,7 @@ namespace UR_Talking
         public NLP()
         {
             this.stanfordNLP = new StanfordNLP();
+
             this.dictionary = Dictionary.LoadDictionary(modelsRoot + @"Dictionary\synonyms_model.bin");
             this.answerTypeDetect = new AnswerTypeDetect(this.dictionary);
 
