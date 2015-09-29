@@ -26,7 +26,6 @@ namespace UR_Talking
         // POST api/<controller>
         public string Post([FromBody]string value)
         {
-
             string request = nlp.ReplaceBySynonyms(value);
 
             List<string> sentences = nlp.SplitIntoSentences(request);
@@ -35,10 +34,10 @@ namespace UR_Talking
 
             //String [] request = StemmerAndTokenizer.stemAndTokenize(new GermanStemmer(), value);
             
-            CreateAnswer answer = new CreateAnswer();
+            //CreateAnswer answer = new CreateAnswer();
 
-            return answer.speak(searchObjects);
-
+            //return answer.speak(searchObjects);
+            return value;
 
             //request = StemmerAndTokenizer.stemAndTokenize(request);
 
