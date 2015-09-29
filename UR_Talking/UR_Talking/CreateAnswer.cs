@@ -110,8 +110,6 @@ namespace UR_Talking
 
             int helper = 100;
 
-            question_user = nlp.ReplaceBySynonyms(question_user);
-
             String question_user_stemm = StemmerAndTokenizer.stemAndTokenize(question_user);
 
             string[] question_user_splitt = question_user_stemm.Split();

@@ -14,20 +14,20 @@ namespace UR_Talking
         private Dictionary dictionary;
         private StanfordNLP stanfordNLP;
 
-        private const string modelsRoot = @"D:\Studium\Informationswissenschaften\UR-Talking\URTalking\UR_Talking\UR_Talking\Models\";
+        private const string modelsRoot = @"D:\Studium\Informationswissenschaften\UR-Talking\URTalking\UR_Talking\UR_Talking\Models\"; //Change PathRoot
 
         public NLP()
         {
             this.stanfordNLP = new StanfordNLP();
 
-            this.dictionary = Dictionary.LoadDictionary(modelsRoot + @"Dictionary\synonyms_model.bin");
+            this.dictionary = Dictionary.LoadDictionary(modelsRoot + @"Dictionary\synonyms_model.bin"); //Change Path
             this.answerTypeDetect = new AnswerTypeDetect(this.dictionary);
 
-            answerTypeDetect.LoadPersonModel(modelsRoot + @"AnswerTypeDetect\person_model.dat");
-            answerTypeDetect.LoadLocationModel(modelsRoot + @"AnswerTypeDetect\location_model.dat");
-            answerTypeDetect.LoadDateModel(modelsRoot + @"AnswerTypeDetect\date_model.dat");
-            answerTypeDetect.LoadPeriodModel(modelsRoot + @"AnswerTypeDetect\period_model.dat");
-            answerTypeDetect.LoadNumberModel(modelsRoot + @"AnswerTypeDetect\number_model.dat");
+            answerTypeDetect.LoadPersonModel(modelsRoot + @"AnswerTypeDetect\person_model.dat");   //Change Path
+            answerTypeDetect.LoadLocationModel(modelsRoot + @"AnswerTypeDetect\location_model.dat"); //Change Path
+            answerTypeDetect.LoadDateModel(modelsRoot + @"AnswerTypeDetect\date_model.dat"); //Change Path
+            answerTypeDetect.LoadPeriodModel(modelsRoot + @"AnswerTypeDetect\period_model.dat"); //Change Path
+            answerTypeDetect.LoadNumberModel(modelsRoot + @"AnswerTypeDetect\number_model.dat"); //Change Path
 
             answerTypeDetect.setSynonyms();
         }
